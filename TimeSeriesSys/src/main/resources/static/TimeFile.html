@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>时间序列预测</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="/lib/angular.js"></script>
+<script src="/lib/angular-route.js"></script>
+<script src="/lib/jquery-validation-1.16.0/lib/jquery.js"></script>
+<script src="/lib/jquery-validation-1.16.0/dist/jquery.validate.min.js"></script>
+<script src="/lib/jquery-validation-1.16.0/dist/localization/messages_zh.js"></script>
+<script src="/lib/jquery.form.js"></script>
+
+<link rel="stylesheet" href="/lib/Font-Awesome-3.2.1/css/font-awesome.min.css">
+<!-- <script src="/lib/jquery-3.2.0.js"></script> -->
+<link href="/lib/bootstrap.css" rel="stylesheet" />
+<link href="/css/mybootstrap.css" rel="stylesheet" />
+<script src="/lib/bootstrap.js"></script>
+<script src="/lib/echarts.min.js"></script>
+
+<body ng-app="userapptime">
+
+<body ng-controller="usercontrol">
+
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+		<div class="page-header">
+				<h1>
+					时间序列分析预测系统<br> <small>Time Series Analysis and Forecast System</small>
+				</h1>
+			</div>
+			<div class="row clearfix">
+				<div class="col-md-2 column">
+				<h5 ng-model="usession">欢迎{{usession}}登录</h5>
+				<a href="signin.html"><button type="button" class="btn btn-default" style="color:#26A2EA;"><i class="icon-signout"></i>&nbsp;退出</button></a>
+				<!-- <h5>昵称：{{unickname}}</h5> -->
+				<!--  <h5>密码：{{upassword}}</h5>-->
+				<!-- <h5>邮箱：{{uemail}}</h5>-->
+				<!-- <h5>角色：{{urole}}</h5>-->
+				
+				 <a href="/TimeFile.html">
+				<button type="button" class="btn btn-primary btn-lg"  ng-hide=!roleFlag>
+<i class="icon-leaf"></i>&nbsp;预测</button></a>
+				</div>
+				
+				
+				<div class="col-md-10 column" style="border-left-style:dotted;border-color:#77C423;">
+				
+				
+				
+<iframe name="id_iframe" style="display:none;"></iframe>
+
+	<a href="/mytmp/sysresource/ExcelTemplate.xls">下载xls格式的模板</a>
+<div class="panel panel-info">
+	<div class="panel-heading">
+		<h3 class="panel-title">生成xls格式的预测结果文件</h3>
+	</div>
+	<div class="panel-body">
+	<form method="post" enctype="multipart/form-data"  action="fileuploadMA" target="id_iframe" class="MAForm"  style="border-bottom-style:dotted;border-color:#99D9EA;">
+	 <label>生成MA：</label>
+		<!-- @RequestMapping("fileupload") -->
+		<input type="file" name="file1"  accept="application/vnd.ms-excel">
+		
+		<!--  <button onclick="changeAction('oneMA')" type="button">一次移动平均预测</button>	-->	
+		<input type="submit" id="importExcelMA" value="上传" class="btn btn-pinko">
+	</form>
+	
+
+<!-- 
+form表单提交类型一定要加上enctype="multipart/form-data"，这是提交媒体文件的声明。
+form表单提交的target="id_iframe"，是为后台处理完成后返回结果刷新name为id_iframe的iframe。这样就不会刷新当前页面。 -->
+
+	<form method="post" enctype="multipart/form-data"  action="fileuploadES" target="id_iframe" class="ESForm" style="border-bottom-style:dotted;border-color:#99D9EA;">
+		<!-- @RequestMapping("fileupload") -->
+		<label>生成ES：</label>
+		<input type="file" name="file2" accept="application/vnd.ms-excel" >
+		
+		
+		<input type="submit" id="importExcelES" value="上传" class="btn btn-pinko">
+	</form>
+	
+	<button id="downloadES" class="btn btn-info"><i class="icon-download-alt"></i>&nbsp;下载预测结果</button>
+		
+
+	
+	<div class="downloadxls">
+	
+	
+	</div>
+	</div>
+</div>
+
+<div class="panel panel-warning">
+	<div class="panel-heading">
+		<h3 class="panel-title">生成图像</h3>
+	</div>
+	<div class="panel-body">
+  <iframe name="iframeForChart" id="iframeForChart" style="display:none;"></iframe>
+	  
+	
+	  
+		<form method="post" enctype="multipart/form-data" id="oochart" action="forChart" target="iframeForChart" style="border-bottom-style:dotted;border-color:#99D9EA;">
+		<label>数据可视化：</label>
+		<input type="file" name="file3" accept="application/vnd.ms-excel" >		
+		<input type="submit" value="上传" class="btn btn-pinko">
+	</form>
+	<button id="graphics" class="btn btn-info"><i class="icon-bar-chart"></i>&nbsp;生成数据可视化</button>
+	<!-- 生成数据图表 -->
+	<div>
+	
+	    <div id="main" style="width: 600px;height:400px;"></div>
+
+	
+	</div>
+	
+	
+	</div>
+</div>
+
+
+
+</div>
+
+
+
+<script>
+
+//$("#importExcelES").click(function(){
+
+//$("form.MAForm").submit(function(){
+	$("#downloadMA").click( function () { 	
+	var res = $(window.frames['id_iframe'].document.body).html();
+	//alert("id_iframe---"+res)
+	$(".downloadxls").append("<a href='/mytmp/clientdownload/"+res+".xls'>下载"+res+"</a><br>");
+	});
+//$("form.ESForm").submit(function(){
+	$("#downloadES").click( function () { 
+	var res = $(window.frames['id_iframe'].document.body).html();
+
+	$(".downloadxls").append("<a href='/mytmp/clientdownload/"+res+".xls'>下载"+res+"</a><br>");
+	});
+	
+
+	
+//----------------------
+	var app = angular.module('userapptime', []);
+		
+	app.controller("usercontrol",function($scope,$http){
+		
+		
+		$http({
+			method: 'POST',
+			url: '/_showSession',
+		
+		}).then(function successCallback(response) {
+				// 请求成功执行代码		
+				 console.log(response);
+				
+				$scope.usession=response.data.nickname
+				$scope.unickname=response.data.nickname
+				$scope.upassword=response.data.password
+				$scope.uemail=response.data.email
+				$scope.urole=response.data.urole
+				
+				if(response.data.urole=="admin"){
+					$scope.roleFlag=false;
+					$scope.functionFlag=true;
+				}
+				if(response.data.urole=="user"){
+					$scope.roleFlag=true;
+					$scope.functionFlag=false;
+				}
+				
+				if(response.data==null||response.data.nickname==undefined||(response.data.urole!=user||response.data.role!=admin)){
+					alert("用户会话失败，跳回登录界面");
+					$(location).attr("href","signin.html");
+				}
+				
+				
+		})
+				
+	});
+	
+//-------生成数据可视化图
+$("#graphics").click( function () { 
+//	var data;
+/*	$(document).ready(function() {  
+	       $("#oochart").ajaxForm(function(data){  
+	             data=data;
+	             alert("OOOOOOOOOOOOOOOOOOO")
+	    	   alert("post success." + data);  
+	           
+	       });   
+	});  
+*/
+/*
+$('#oochart').submit(function() {   
+    $(this).ajaxSubmit(function(data) {   
+        alert(data+"----------");  
+    });  
+    return false;  
+}); 
+*/
+
+
+	
+	
+	
+	//var resForChart= $(window.frames['iframeForChart'].document.body).html();
+	var resForChart= $(window.frames['iframeForChart'].document.body).html();
+	var res1=resForChart.indexOf(">");
+	var res2=resForChart.lastIndexOf("<");
+	var resForChart2=resForChart.substring(res1+1,res2)	
+//	alert("截取pre标签之间的json    "+resForChart2);
+	var obj = JSON.parse(resForChart2);
+	
+	
+	//alert("The first value: "+obj[0].valueK)
+	var arrayValue= new Array();
+	var arrayTime= new Array();
+	for(var ii=0;ii<obj.length;ii++){
+		var timeE=obj[ii].timeK;
+		arrayTime.push(timeE);
+		}
+	
+	for(var ii=0;ii<obj.length;ii++){
+		var valueE=obj[ii].valueK;
+		arrayValue.push(valueE);
+		}
+	
+	
+	
+  /*  alert("ssssssssssss"+resForChart[0].valueK)
+    var doc;
+    if (document.all){//IE
+            doc = document.frames["iframeForChart"].document;
+            alert("ieieiess"+doc[0])
+    }else{//Firefox   
+            doc = document.getElementById("iframeForChart").contentDocument;
+            alert("firesssss"+doc[0])
+    }
+    
+    $('#iframeForChart').load(function(){
+        var text=$(this).contents().find("body").text();
+           // 根据后台返回值处理结果
+        var j=$.parseJSON(text);
+        if(j.status!=0) {
+            alert(j.msg);
+        } else {
+            alert('导入成功');
+            //location.href='BookResourceList.jsp'
+        }
+    });*/
+    // 异步加载数据
+ /*      $.post('/forChart').done(function (data) {
+           // 填入数据
+           myChart.setOption({
+               xAxis: {
+                   data: data.timeK
+               },
+               series: [{
+                   // 根据名字对应到相应的系列
+                   name: '数据',
+                   data: data.valueK
+               }]
+           });
+       });
+   */ 
+    //----
+    
+           // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // 指定图表的配置项和数据
+var option = {
+    title: {
+        text: '时间序列分析预测'
+    },
+ 			itemStyle: {
+			normal: {
+        // 设置图表的颜色
+				color: '#C295DF',
+				}
+			},
+    tooltip : {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            label: {
+                backgroundColor: '#2CB9F6'
+            }
+        }
+    },
+    legend: {
+        data:['数据']
+    },
+
+
+    xAxis : [
+        {
+            type : 'category',
+            boundaryGap : false,
+            data :arrayTime
+        }
+    ],
+    yAxis : [
+        {
+            type : 'value'
+        }
+    ],
+    series : [
+        {
+            name:'数据',
+            type:'line',
+            areaStyle: {normal: {}},
+            data:arrayValue
+        }
+    ]
+};
+        
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);	
+ 
+
+    
+    
+    //---
+	})
+
+
+	
+ 
+
+</script>
+</body>
+</html>

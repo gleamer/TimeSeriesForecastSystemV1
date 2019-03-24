@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>时间序列分析预测系统主页</title>
+
+</head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="/lib/angular.js"></script>
+<script src="/lib/angular-route.js"></script>
+<script src="/lib/jquery-validation-1.16.0/lib/jquery.js"></script>
+<script src="/lib/jquery-validation-1.16.0/dist/jquery.validate.min.js"></script>
+<script src="/lib/jquery-validation-1.16.0/dist/localization/messages_zh.js"></script>
+
+
+<link rel="stylesheet" href="/lib/Font-Awesome-3.2.1/css/font-awesome.min.css">
+<!-- <script src="/lib/jquery-3.2.0.js"></script> -->
+<link href="/lib/bootstrap.css" rel="stylesheet" />
+<link href="/css/mybootstrap.css" rel="stylesheet" />
+<script src="/lib/bootstrap.js"></script>
+
+ <style>
+
+ 
+.error{
+	color:deepskyblue;
+}
+</style>
+<body  ng-app="userapp" ng-controller="usercontrol">
+
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+		<div class="page-header">
+				<h1>
+					时间序列分析预测系统<br> <small>Time Series Analysis and Forecast System</small>
+				</h1>
+			</div>
+			<div class="row clearfix">
+				<div class="col-md-2 column">
+				<h5 ng-model="usession">欢迎{{usession}}登录</h5>
+				<a href="signin.html"><button type="button" class="btn btn-default" style="color:#26A2EA;"><i class="icon-signout"></i>&nbsp;退出</button></a>
+				<h5>昵称：{{unickname}}</h5>
+				<!--  <h5>密码：{{upassword}}</h5>-->
+				<!-- <h5>邮箱：{{uemail}}</h5>-->
+				<!-- <h5>角色：{{urole}}</h5>-->
+				<!-- 查看个人信息  模态框  ▽-->
+				<button class="btn btn-default btn-xs" data-toggle="modal" data-target="#userInfoModal"  style="color:#26A2EA;">
+				<i class="icon-user"></i>个人信息</button>
+				<!-- 模态框（Modal） -->
+<div class="modal fade" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="userInfoModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="userInfoModalLabel" style="color:#26A2EA;">
+					个人信息
+				</h4>
+			</div>
+			<div class="modal-body">
+				<h5>昵称：{{unickname}}</h5>
+	
+				 <h5>邮箱：{{uemail}}</h5>
+				 <h5>角色：{{urole}}</h5>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default btn-sm" data-dismiss="modal" style="color:#26A2EA;">关闭
+				</button>
+
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+				
+				
+				<!--  查看个人信息  模态框  △ -->
+				
+				
+				<!-- 修改个人信息(password) 模态框  ▽-->
+				<button class="btn btn-default btn-xs" data-toggle="modal" data-target="#modifyInfoModal"  style="color:#26A2EA;">
+				<i class="icon-cog"></i>&nbsp;修改信息</button>
+				
+				
+				<!-- 模态框（Modal） -->
+<div class="modal fade" id="modifyInfoModal" tabindex="-1" role="dialog" aria-labelledby="modifyInfoModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="modifyInfoModalLabel" style="color:#26A2EA;">
+					修改信息--请输入
+				</h4>
+			</div>
+			<form class="form-horizontal" role="form" >
+			<div class="modal-body">
+				
+	<div class="form-group">
+		<label for="originalPassword" class="col-sm-2 control-label">原密码</label>
+		<div class="col-sm-10">
+			<input type="password" class="form-control" id="originalPassword" ng-model="pwd.old" 
+				   placeholder="原密码">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="modifyPassword" class="col-sm-2 control-label">修改密码</label>
+		<div class="col-sm-10">
+			<input type="password" class="form-control" id="modifyPassword" placeholder="修改密码" ng-model="pwd.new1">
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<label for="confirmPassword" class="col-sm-2 control-label">确认密码</label>
+		<div class="col-sm-10">
+			<input type="password" class="form-control" id="confirmPassword" placeholder="确认密码"  ng-model="pwd.new2">
+		</div>
+	</div>
+
+	</div>
+
+			<div class="modal-footer">
+
+				<button type="button" class="btn btn-default btn-sm"  type="submit" data-dismiss="modal" ng-click="updatePwd()" style="color:#26A2EA;" id="#modifyInfo">
+					提交更改</button>
+				
+			</div>
+			</form>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+				
+				
+				
+				
+				
+				<!--  修改个人信息(password)   模态框  △ -->
+				
+				
+				 <a href="/TimeFile.html">
+				<button type="button" class="btn btn-primary btn-lg"  ng-hide=!roleFlag>
+<i class="icon-leaf"></i>&nbsp;预测</button></a>
+
+<!--  <button type="submit" class="btn btn-info"  ng-click="thefunction()">功能</button>-->
+ <button type="button" class="btn btn-default btn-primary" ng-click="thefunction()" ng-class="{disabled:roleFlag}" ng-hide=roleFlag>
+ <i class=" icon-table"></i>&nbsp;显示所有用户</button>
+				</div>
+				<div class="col-md-10 column" style="border-left-style:dotted;border-color:#77C423;">
+				
+				
+				
+
+<br>
+<!--  
+
+ disabled:--roleFlag:{{roleFlag}}
+ <br>
+ functionFlag:{{functionFlag}}
+ -->
+<div ng-show="functionFlag">
+
+过滤:<input type="text" ng-model="searchFilter">
+
+
+<table class="table table-bordered">
+  <thead>
+  <tr>
+    <th>编辑</th>
+    <th>id</th>
+    <th>昵称</th>
+    <th>邮箱</th>
+    <th>密码</th>
+    <th>角色</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="user in usertable| filter:searchFilter | orderBy:'uid'" ng-model="usertable">
+    <td>
+    
+    
+    
+            <button class="btn btn-info" ng-click="user.edit=true" ng-show="!user.edit">
+            <i class="icon-edit"></i>&nbsp;修改</button>
+            
+            <button class="btn btn-info" ng-click="updateUserCon(user)" ng-show="user.edit">
+            <i class="icon-edit"></i>&nbsp;确认</button>
+            
+            <button class="btn btn-info" ng-click="user.edit=false" ng-show="user.edit">
+            <i class="icon-edit"></i>&nbsp;取消</button>
+
+    </td>
+    <td><strong ng-bind="user.uid"></strong><input type="text" ng-model="user.uid" readonly="readonly" ng-hide="true"></td>
+    <td><strong ng-show="!user.edit">{{user.nickname}}</strong>
+    <input type="text"  id='n_{{user.uid}}' ng-model="user.nickname" ng-show="user.edit">
+    </td>
+    <!--    value={{user.email}}      -->
+    <td><strong ng-show="!user.edit">{{user.email}}</strong>
+    <input type="text" ng-model="user.email"  ng-show="user.edit">
+    </td>
+    <td><strong ng-show="!user.edit">{{user.password}}</strong>
+    <input type="text" ng-model="user.password"  ng-show="user.edit">
+    </td>
+    <td><strong ng-show="!user.edit">{{user.urole}}</strong>
+    <input type="text" ng-model="user.urole" ng-show="user.edit"></td>
+  </tr>
+  </tbody>
+</table>
+
+<hr>
+<button class="btn btn-pinko" ng-click="addUser('new')">
+<i class="icon-plus"></i>&nbsp;创建新用户
+</button>
+<hr>
+
+<h3 ng-show="edit">创建新用户:</h3>
+<!-- <h3 ng-hide="edit">添加用户:</h3> -->
+
+
+<form class="form-horizontal" ng-show="edit" id="adminAddAUser">
+
+ 
+  <div class="form-group">
+    <label class="col-sm-2 control-label">邮箱:</label>
+    <div class="col-sm-10">
+    <input type="text" ng-model="addemail" name="emailad" placeholder="邮箱">
+    </div>
+  </div> 
+  <div class="form-group">
+    <label class="col-sm-2 control-label">昵称:</label>
+    <div class="col-sm-10">
+    <input type="text" ng-model="addnickname" name="nicknamead" placeholder="昵称">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">密码:</label>
+    <div class="col-sm-10">
+    <input type="password" ng-model="addpassword1" name="pwdad1" id="pwdad1" placeholder="密码">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label">重复密码:</label>
+    <div class="col-sm-10">
+    <input type="password" ng-model="addpassword2" name="pwdad2" placeholder="重复密码">
+    </div>
+  </div>
+  
+	<div class="form-group">
+     <label class="col-sm-2 control-label">角色:</label>
+     <div class="col-sm-10">
+  	 <label class="checkbox-inline"  ng-repeat="role in roles" for="{{role}}">
+		<input type="radio" name="favorite" id="{{role}}" value="user" ng-value="role" ng-model="my.mychoice"> {{role}}		 
+		<!-- checked -->	               
+	 </label>	 
+	</div>
+  </div>
+  <h3>你选择了 {{my.mychoice}}  角色</h3>
+</form>
+
+<hr>
+<button class="btn btn-pinko" ng-disabled="error || incomplete" ng-click="addSumit()">
+<i class="icon-ok"></i>&nbsp;确认添加
+</button>
+				
+				
+				
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script>
+/**
+ * 个人主页
+ * home.html
+ */
+
+var app = angular.module('userapp', []);
+
+
+//------
+	
+app.controller("usercontrol",function($scope,$http){
+	
+	
+	$http({
+		method: 'POST',
+		url: '/_showSession',
+	
+	}).then(function successCallback(response) {
+			// 请求成功执行代码		
+			 console.log(response);
+			
+			$scope.usession=response.data.nickname
+			$scope.unickname=response.data.nickname
+			$scope.upassword=response.data.password
+			$scope.uemail=response.data.email
+			$scope.urole=response.data.urole
+			
+			if(response.data.urole=="admin"){
+				$scope.roleFlag=false;
+				$scope.functionFlag=true;
+			}
+			if(response.data.urole=="user"){
+				$scope.roleFlag=true;
+				$scope.functionFlag=false;
+			}
+			
+			
+			$scope.thefunction = function(){
+				$http({
+					method: 'POST',
+					url: '/adminSearch'
+			
+				}).then(function successCallback(response) {
+						// 请求成功执行代码
+						
+						 console.log(response.data);
+						 $scope.usertable=response.data
+						 
+						 
+						 
+						 //oooooooooo
+						 
+						 //oooooooo
+						 
+
+
+					}, function errorCallback(response) {
+						// 请求失败执行代码
+						alert("查询用户列表失败！")
+						alert(response)
+				
+					}
+				
+					)
+			//alert("功能")
+		}
+			
+			//$scope.error = true;
+			$scope.incomplete = true; 
+			//$scope.!user.edit=true;
+			//$scope.user.edit=false;
+	
+			if(response.data==null||response.data.nickname==undefined||(response.data.urole!=user||response.data.role!=admin)){
+				alert("用户会话失败，跳回登录界面");
+				$(location).attr("href","signin.html");
+			}
+			
+			
+			
+			
+
+
+			//$scope.userInputEmail=response.data.email;
+		}, function errorCallback(response) {
+			// 请求失败执行代码
+			alert("请求失败")
+			alert(response)
+	
+		}
+	
+		)
+		
+		$scope.addemail = '';
+	$scope.addnickname = '';
+	$scope.addpassword1 = '';
+	$scope.addpassword2 = '';
+	$scope.error = true;
+	$scope.incomplete = true; 
+	
+	$scope.addUser = function(id) {
+		  if (id == 'new') {
+		    $scope.edit = true;
+		    $scope.incomplete = true;
+		    $scope.addemail = '';
+			$scope.addnickname = '';
+			$scope.addpassword1 = '';
+			$scope.addpassword2 = '';
+			$scope.roles = ['user', 'admin'];
+			$scope.my = { mychoice: 'user' };
+		    }
+
+		};
+	
+	$scope.addSumit=function(){
+			if($scope.edit){
+
+
+				$http({
+					method: 'POST',
+					url: '/adminAddUser',
+					params:{
+				    "emaila":$scope.addemail,
+					"nicknamea":$scope.addnickname,
+					"passworda":$scope.addpassword2,
+					"urolea":$scope.my.mychoice
+					}
+				}).then(function successCallback(response) {
+						// 请求成功执行代码
+						 console.log(response);
+						 if(response.data>0){
+							 alert("创建新用户成功，用户邮箱： "+$scope.addemail);
+						 }
+						
+					}, function errorCallback(response) {
+						// 请求失败执行代码
+						alert("创建新用户失败!")
+						alert(response.data)
+				});
+				
+				
+			}
+		}
+	
+	
+	$scope.$watch('addemail',function() {$scope.test();});
+	$scope.$watch('addnickname',function() {$scope.test();});
+	$scope.$watch('addpassword1',function() {$scope.test();});
+	$scope.$watch('addpassword2',function() {$scope.test();});
+
+	$scope.test = function() {
+	  if ($scope.addpassword1 !== $scope.addpassword2) {
+	    $scope.error = true;
+	    } 
+	  
+	  else {
+	    $scope.error = false;
+	  }
+	  $scope.incomplete = false;
+	  if ($scope.edit && (!$scope.addemail.length ||
+	    !$scope.addnickname.length ||
+	    !$scope.addpassword1.length || !$scope.addpassword2.length)) {
+	    $scope.incomplete = true;
+	  }
+	};
+	
+	
+	$scope.updateUserCon= function(user){
+		user.edit=false;
+		
+		alert("我要确认修改----");
+		//if($scope.user.edit){
+
+//--------------------------------------------------------------------------------------------ooooooooo
+
+
+			$http({
+				method: 'POST',
+				url: '/adminUpdateUser',
+				params:{
+			    "emaile":user.email,
+				"nicknamee":user.nickname,
+				"passworde":user.password,
+				"urolee":user.urole,
+				
+				"uide":user.uid
+				}
+			}).then(function successCallback(response) {
+					// 请求成功执行代码
+					 console.log(response);
+					 if(response.data>0){
+						 alert("修改成功");
+					 }
+					
+				}, function errorCallback(response) {
+					// 请求失败执行代码
+					alert("修改用户失败!")
+					alert(response.data)
+			});
+			
+			
+		//}
+		
+		
+		
+	}
+
+	//模态弹出框
+	$scope.updatePwd=function(){
+		$http({
+			method:"post",
+			url:"/_modifyInfo",
+			params:{opwd:$scope.pwd.old,pwd1:$scope.pwd.new1,pwd2:$scope.pwd.new2}
+			
+		}).then(function SuccessCallBack(response){
+			var a=response.data;
+			console.log(a);
+			if(a==true){
+				alert("修改密码成功");
+			}else{
+				alert("修改密码失败");
+			}
+		})
+	}
+	
+	
+
+	
+});
+
+
+
+
+</script>
+
+<!--  <script src="/js/myUserso.js"></script>-->
+
+<script>
+$.validator.setDefaults({
+    submitHandler: function() {
+      //alert("提交事件!");
+    }
+});
+$().ready(function() {
+// 在键盘按下并释放及提交后验证提交表单
+  $("#adminAddAUser").validate({
+	    rules: {
+	    	nicknamead: {
+	        required: true,
+	        minlength: 2
+	      },
+	      pwdad1: {
+	        required: true,
+	        minlength: 5
+	      },
+	      pwdad2: {
+	        required: true,
+	        minlength: 5,
+	        equalTo: "#pwdad1"
+	      },
+	      emailad: {
+	        required: true,
+	        email: true
+	      },
+	      "topic[]": {
+	        required: "#newsletter:checked",
+	        minlength: 2
+	      },
+	      agree: "required"
+	    },
+	    messages: {
+
+	    	nicknamead: {
+	        required: "请输入昵称",
+	        minlength: "昵称必需至少由两个字母组成"
+	      },
+	      pwdad1: {
+	        required: "请输入密码",
+	        minlength: "密码长度不能小于 5 个字母"
+	      },
+	      pwdad2: {
+	        required: "请输入密码",
+	        minlength: "密码长度不能小于 5 个字母",
+	        equalTo: "两次密码输入不一致"
+	      },
+	      emailad: "请输入一个正确的邮箱",
+	      
+	    }
+	});
+});
+
+
+</script>
+
+
+
+
+</body>
+</html>

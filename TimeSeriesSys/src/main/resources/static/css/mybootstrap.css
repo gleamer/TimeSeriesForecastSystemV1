@@ -1,0 +1,57 @@
+.btn-pinko {
+  color: #fff;
+  background-color: #E67DB1;
+  border-color: #DA469A;
+}
+.btn-pinko:focus,
+.btn-pinko.focus {
+  color: #fff;
+  background-color: #EB5F97;
+  border-color: #F65C99;
+}
+.btn-pinko:hover {
+  color: #fff;
+  background-color: #EB5F97;
+  border-color: #E566AE;
+}
+.btn-pinko:active,
+.btn-pinko.active,
+.open > .dropdown-toggle.btn-pinko {
+  color: #fff;
+  background-color: #EB5F97;
+  border-color: #E566AE;
+}
+.btn-pinko:active:hover,
+.btn-pinko.active:hover,
+.open > .dropdown-toggle.btn-pinko:hover,
+.btn-pinko:active:focus,
+.btn-pinko.active:focus,
+.open > .dropdown-toggle.btn-pinko:focus,
+.btn-pinko:active.focus,
+.btn-pinko.active.focus,
+.open > .dropdown-toggle.btn-pinko.focus {
+  color: #fff;
+  background-color: #E566AE;
+  border-color: #F65C99;
+}
+.btn-pinko:active,
+.btn-pinko.active,
+.open > .dropdown-toggle.btn-pinko {
+  background-image: none;
+}
+.btn-pinko.disabled:hover,
+.btn-pinko[disabled]:hover,
+fieldset[disabled] .btn-pinko:hover,
+.btn-pinko.disabled:focus,
+.btn-pinko[disabled]:focus,
+fieldset[disabled] .btn-pinko:focus,
+.btn-pinko.disabled.focus,
+.btn-pinko[disabled].focus,
+fieldset[disabled] .btn-pinko.focus {
+  background-color: #E67DB1;
+  border-color: #DA469A;
+}
+.btn-pinko .badge {
+  color: #E67DB1;
+  background-color: #fff;
+}
